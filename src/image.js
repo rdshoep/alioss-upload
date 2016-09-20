@@ -7,7 +7,7 @@
  * @version 
  *   1.0.0(8/16/2016)
  */
-import Promise from 'promise'
+import Promise from 'promise';
 import * as util from './utils';
 import piexif from 'piexifjs';
 
@@ -41,9 +41,9 @@ function compress(imgObj, quality, outputFormat) {
 
     var sourceImageData = imgObj.src;
     var exifObj;
-    try{
+    try {
         exifObj = piexif.load(sourceImageData);
-    }catch (err){
+    } catch (err) {
         console.log('load exif from image', err);
     }
 
@@ -93,7 +93,7 @@ function compress(imgObj, quality, outputFormat) {
     //     cxt.drawImage(imgObj, 0, 0, width, height);
     // }
     cxt.drawImage(imgObj, 0, 0, width, height);
-    var data =  cvs.toDataURL(mime_type, quality / 100);
+    var data = cvs.toDataURL(mime_type, quality / 100);
 
     //进行最小压缩
     // var ndata = cvs.toDataURL('image/jpeg', 0.1);
@@ -103,11 +103,11 @@ function compress(imgObj, quality, outputFormat) {
     cvs.width = cvs.height = 0;
 
     //如果存在exif信息,则将exif信息插入到图片中
-    try{
-        if(exifObj && data){
+    try {
+        if (exifObj && data) {
             return piexif.insert(piexif.dump(exifObj), data);
         }
-    }catch (err){
+    } catch (err) {
         console.log('insert exif to image', err);
     }
 
@@ -136,7 +136,7 @@ function removeUselessChars(base64String, sourceType) {
  * @returns {Array}
  */
 function convertBase64ToBytes(base64String) {
-    return Array.prototype.map.call(base64String, function (c) {
+    return Array.prototype.map.call(base64String, function(c) {
         return c.charCodeAt(0) & 0xff;
     });
 }
@@ -160,14 +160,14 @@ function convertFileToImage(file, cb) {
         cb = cb || new Function;
         var reader = new FileReader();
 
-        reader.onload = function () {
+        reader.onload = function() {
             var result = this.result;
             var img = new Image();
             img.src = result;
             if (img.complete) {
                 cb(null, img)
             } else {
-                img.onload = function () {
+                img.onload = function() {
                     cb(null, img)
                 };
             }
@@ -184,7 +184,7 @@ function convertFileToImage(file, cb) {
  * @returns {*}
  */
 function compressForUpload(source, quality, format, cb) {
-    return new Promise(function (resolve, reject) {
+    return new Promise(function(resolve, reject) {
         if (cb && typeof cb == 'function') {
             resolve = util.concatResolve(cb, resolve);
             reject = util.concatReject(cb, reject);
@@ -192,7 +192,7 @@ function compressForUpload(source, quality, format, cb) {
 
         if (source) {
             if (source instanceof File) {
-                convertFileToImage(source, function (err, img) {
+                convertFileToImage(source, function(err, img) {
                     if (err) {
                         reject(err)
                     } else {
@@ -236,4 +236,4 @@ function convertDataToBuffer(data) {
 export default {
     compress,
     compressForUpload
-}
+};
