@@ -25,5 +25,11 @@ module.exports = {
                 loader: 'json-loader'
             }
         ]
+    },
+    resolve: {
+        root: path.resolve(__dirname, ''),
+        alias:{
+            'crypto': 'shims/crypto.js'
+        }
     }
 };

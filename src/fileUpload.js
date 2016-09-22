@@ -1,8 +1,7 @@
-console.log('da');
+;
 (function(root, factory) {
     'use strict'
 
-    console.log(root, root === undefined)
     if (root) {
         root.FileUpload = factory()
     }
