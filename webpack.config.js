@@ -3,7 +3,7 @@ var webpack = require('webpack');
 
 module.exports = {
     entry: {
-        'upload': [path.resolve(__dirname, 'src/fileUpload.js')]
+        'upload': ['babel-polyfill', path.resolve(__dirname, 'src/fileUpload.js')]
     },
     output: {
         path: path.resolve(__dirname, 'dist'),
@@ -28,7 +28,7 @@ module.exports = {
     },
     resolve: {
         root: path.resolve(__dirname, ''),
-        alias:{
+        alias: {
             'crypto': 'shims/crypto.js'
         }
     }
