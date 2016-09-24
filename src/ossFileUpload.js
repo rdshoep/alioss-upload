@@ -4,7 +4,7 @@
 import { extend, leftpad } from './utils';
 import ajax from '@fdaciuk/ajax';
 import Promise from 'promise';
-import OSS from 'ali-oss';
+// import OSS from 'ali-oss';
 
 //alioss default domain host
 const ALI_OSS_DOMAIN = "aliyuncs.com/";
@@ -148,7 +148,7 @@ class OssFileUpload {
         type = type || TYPE_FILE;
 
         if (TYPE_FILE == type) {
-            return this.client.multipartUpload(name, file, option);
+            return this.client.multipartUpload(name, data, option);
         } else if (TYPE_BUFFER == type) {
             return this.client.put(name, new OSS.Buffer(data));
         } else {
@@ -191,17 +191,24 @@ class OssFileUpload {
 
         var _this = this;
 
-        let type = opt.type || TYPE_FILE;
+        let type = option.type || TYPE_FILE;
+
+        if (!file) {
+            return new Promise(function(resolve, reject) {
+                error(name, 'file content can not be empty!');
+                reject(err);
+            });
+        }
 
         return this.verify()
             .then(function() {
                 before(name);
                 console.log('begin upload');
-                return _uploadImpl(file, name, type, {
+                return _this._uploadImpl(file, name, type, {
                     progress: function(p) {
                         return function(done) {
                             console.log('upload progress: %s', p);
-                            progress(p);
+                            progress(name, p);
                             done();
                         };
                     }
@@ -215,7 +222,7 @@ class OssFileUpload {
             })
             .catch(function(err) {
                 console.log('upload error: %j', err);
-                error(err);
+                error(name, err);
                 return new Promise(function(resolve, reject) {
                     reject(err);
                 });
@@ -223,4 +230,6 @@ class OssFileUpload {
     }
 }
 
-export default OssFileUpload;
+// export default OssFileUpload;
+
+module.exports = OssFileUpload;
