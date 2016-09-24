@@ -12,7 +12,9 @@ module.exports = {
     },
     node: {
         fs: "empty",
-        child_process: "empty"
+        child_process: "empty",
+        zlib: "empty",
+        "iconv-lite": "empty"
     },
     devtool: "#source-map",
     module: {

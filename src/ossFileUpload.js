@@ -4,7 +4,7 @@
 import { extend, leftpad } from './utils';
 import ajax from '@fdaciuk/ajax';
 import Promise from 'promise';
-// import OSS from 'ali-oss';
+import OSS from 'ali-oss';
 
 //alioss default domain host
 const ALI_OSS_DOMAIN = "aliyuncs.com/";
