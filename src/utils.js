@@ -43,7 +43,7 @@ function leftpad(str, len, ch) {
 function concatResolve(cb, resolve) {
     if (!(cb && typeof cb == 'function')) return resolve;
 
-    return function () {
+    return function() {
         cb.apply(this, [null].concat([].slice.apply(arguments)));
         resolve.apply(this, arguments);
     }
@@ -55,9 +55,17 @@ function concatResolve(cb, resolve) {
 function concatReject(cb, reject) {
     if (!(cb && typeof cb == 'function')) return reject;
 
-    return function () {
+    return function() {
         cb.apply(this, arguments);
         reject.apply(this, arguments);
+    }
+}
+
+function resolveFunctoin(possibleFunction) {
+    if (possibleFunction && possibleFunction instanceof Function) {
+        return possibleFunction;
+    } else {
+        return new Function;
     }
 }
 
@@ -65,5 +73,6 @@ export {
     extend,
     leftpad,
     concatResolve,
-    concatReject
+    concatReject,
+    resolveFunctoin
 }

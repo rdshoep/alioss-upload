@@ -32,8 +32,21 @@ function autoCanvas(canvas) {
  * @param {String} output format. Possible values are jpg and png
  * @return {Image} result_image_obj The compressed Image Object
  */
-function compress(imgObj, quality, outputFormat) {
+// maxSize {Boolean | Number}  default: true   value: Number || (true? DEFAULT_COMPRESS_PIXELS_SIZE: 0)
+// maxWidth, maxHeight (0--∞)
+// quality(default: 100)
+// outputFormat(default: jpeg)
+// exif(default: true)
+function compress(imgObj, option) { //quality, outputFormat
     if (!imgObj) return;
+
+    option = option || {};
+    let quality = option.quality || 100;
+    let outputFormat = option.outputFormat || 'jpeg';
+    let exif = option.exif === false ? false : true;
+
+    let maxWidth = option.maxWidth || 0;
+    let maxHeight = option.maxHeight || 0;
 
     if (typeof imgObj == 'string') {
         imgObj = document.getElementById(imgObj);
@@ -155,7 +168,7 @@ function convertBytesToBuffer(bytes) {
  * @param file 图片文件
  * @param cb 回调
  */
-function convertFileToImage(file, cb) {
+function readFileAsDataUrl(file, cb) {
     if (file && file instanceof File) {
         cb = cb || new Function;
         var reader = new FileReader();
@@ -183,7 +196,7 @@ function convertFileToImage(file, cb) {
  * @param format
  * @returns {*}
  */
-function compressForUpload(source, quality, format, cb) {
+function compressFile(source, quality, format, cb) {
     return new Promise(function(resolve, reject) {
         if (cb && typeof cb == 'function') {
             resolve = util.concatResolve(cb, resolve);
@@ -192,7 +205,7 @@ function compressForUpload(source, quality, format, cb) {
 
         if (source) {
             if (source instanceof File) {
-                convertFileToImage(source, function(err, img) {
+                readFileAsDataUrl(source, function(err, img) {
                     if (err) {
                         reject(err)
                     } else {
@@ -235,5 +248,10 @@ function convertDataToBuffer(data) {
 
 export default {
     compress,
-    compressForUpload
+    compressFile
 };
+
+module.exports = {
+    compress,
+    compressFile
+}
