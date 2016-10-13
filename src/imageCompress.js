@@ -38,6 +38,11 @@ function autoCanvas(canvas) {
 // outputFormat(default: jpeg)
 // exif(default: true)
 function compress(imgObj, option) { //quality, outputFormat
+    if (typeof imgObj == 'string') {
+        imgObj = document.getElementById(imgObj);
+    }
+
+    //确保imgObj是ImageElement
     if (!imgObj) return;
 
     option = option || {};
@@ -45,19 +50,19 @@ function compress(imgObj, option) { //quality, outputFormat
     let outputFormat = option.outputFormat || 'jpeg';
     let exif = option.exif === false ? false : true;
 
-    let maxWidth = option.maxWidth || 0;
-    let maxHeight = option.maxHeight || 0;
-
-    if (typeof imgObj == 'string') {
-        imgObj = document.getElementById(imgObj);
-    }
+    // let maxWidth = option.maxWidth || 0;
+    // let maxHeight = option.maxHeight || 0;
+    // let maxSize = option.maxSize;
 
     var sourceImageData = imgObj.src;
+
     var exifObj;
-    try {
-        exifObj = piexif.load(sourceImageData);
-    } catch (err) {
-        console.log('load exif from image', err);
+    if (exif) {
+        try {
+            exifObj = piexif.load(sourceImageData);
+        } catch (err) {
+            console.log('load exif from image', err);
+        }
     }
 
     var mime_type = "image/jpeg";
@@ -116,12 +121,18 @@ function compress(imgObj, option) { //quality, outputFormat
     cvs.width = cvs.height = 0;
 
     //如果存在exif信息,则将exif信息插入到图片中
-    try {
-        if (exifObj && data) {
-            return piexif.insert(piexif.dump(exifObj), data);
+    if (exif) {
+        if (exifObj) {
+            try {
+                if (data) {
+                    data = piexif.insert(piexif.dump(exifObj), data);
+                }
+            } catch (err) {
+                console.log('insert exif to image', err);
+            }
+        } else {
+            console.warn('Empty exif info, Skip backup image exif info');
         }
-    } catch (err) {
-        console.log('insert exif to image', err);
     }
 
     return data;
@@ -149,7 +160,7 @@ function removeUselessChars(base64String, sourceType) {
  * @returns {Array}
  */
 function convertBase64ToBytes(base64String) {
-    return Array.prototype.map.call(base64String, function(c) {
+    return Array.prototype.map.call(base64String, function (c) {
         return c.charCodeAt(0) & 0xff;
     });
 }
@@ -173,14 +184,14 @@ function readFileAsDataUrl(file, cb) {
         cb = cb || new Function;
         var reader = new FileReader();
 
-        reader.onload = function() {
+        reader.onload = function () {
             var result = this.result;
             var img = new Image();
             img.src = result;
             if (img.complete) {
                 cb(null, img)
             } else {
-                img.onload = function() {
+                img.onload = function () {
                     cb(null, img)
                 };
             }
@@ -197,7 +208,7 @@ function readFileAsDataUrl(file, cb) {
  * @returns {*}
  */
 function compressFile(source, quality, format, cb) {
-    return new Promise(function(resolve, reject) {
+    return new Promise(function (resolve, reject) {
         if (cb && typeof cb == 'function') {
             resolve = util.concatResolve(cb, resolve);
             reject = util.concatReject(cb, reject);
@@ -205,7 +216,7 @@ function compressFile(source, quality, format, cb) {
 
         if (source) {
             if (source instanceof File) {
-                readFileAsDataUrl(source, function(err, img) {
+                readFileAsDataUrl(source, function (err, img) {
                     if (err) {
                         reject(err)
                     } else {
