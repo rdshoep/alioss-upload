@@ -10,6 +10,132 @@
 import Promise from 'promise';
 import * as util from './utils';
 import piexif from 'piexifjs';
+import compose from './compose'
+
+function ImageObject(imgObj, option) {
+    if (typeof imgObj == 'string') {
+        imgObj = document.getElementById(imgObj);
+    }
+
+    //确保imgObj是ImageElement
+    if (!imgObj) return;
+
+    option = option || {};
+    let quality = option.quality || 100;
+    let outputFormat = option.outputFormat || 'jpeg';
+    let exif = option.exif === false ? false : true;
+
+    // let maxWidth = option.maxWidth || 0;
+    // let maxHeight = option.maxHeight || 0;
+    // let maxSize = option.maxSize;
+
+    var sourceImageData = imgObj.src;
+}
+
+function check(imageObject, next) {
+
+}
+
+function backupImageExif(imageObject, next) {
+    let data = imageObject.data;
+    let option = imageObject.option;
+
+    if (option.exif) {
+        let exifObj;
+        try {
+            exifObj = piexif.load(data);
+        } catch (err) {
+            return Promise.reject('load exif from image error');
+        }
+
+        return next().then(function () {
+            let data = imageObject.data;
+
+            try {
+                if (data) {
+                    data = piexif.insert(piexif.dump(exifObj), data);
+                }
+            } catch (err) {
+                return Promise.reject('insert exif to image error');
+            }
+        });
+    }
+
+    return next();
+}
+
+function compress(imageObject, next) {
+    let option = imageObject.option;
+
+    let maxSize = option.maxSize
+        , maxPixels = DEFAULT_COMPRESS_PIXELS_SIZE
+        , maxHeight = option.maxHeight
+        , maxWidth = option.maxWidth;
+
+    if (maxWidth > 0 && maxHeight > 0) {
+        maxPixels = Math.min(maxPixels, maxWidth * maxHeight);
+    }
+
+    //默认为jpeg格式，如果输出需求为png
+    let outputFormat = option.outputFormat || 'jpeg';
+
+    let mime_type = "image/jpeg"
+        , unitPixelSize = 3;
+    if (typeof outputFormat !== "undefined" && (outputFormat == "png" || outputFormat == 'image/png')) {
+        mime_type = "image/png";
+        unitPixelSize = 4;
+    }
+
+    let imgObj = imageObject.element;
+
+    cvs = autoCanvas(cvs);
+    let cxt = cvs.getContext("2d");
+    var width = imgObj.naturalWidth;
+    var height = imgObj.naturalHeight;
+    var ratio = 1;
+    if ((ratio = width * height / DEFAULT_COMPRESS_PIXELS_SIZE) > 1) {
+        ratio = Math.sqrt(ratio);
+        width /= ratio;
+        height /= ratio;
+    }
+
+    //如果是jpg，则添加铺底色
+    if (mime_type == 'image/jpeg') {
+        cvs.fillStyle = option.backgroundColor || '#fff';
+    }
+
+    cvs.width = width;
+    cvs.height = height;
+    cxt.fillRect(0, 0, width, height);
+    //如果图片像素大于单位万片最大值则使用瓦片绘制
+    // var count;
+    // if ((count = width * height / MAX_IMAGE_TILE_SIZE) > 1) {
+    //     tmpCvs = autoCanvas(tmpCvs);
+    //     let tmpCtx = tmpCvs.getContext("2d");
+    //
+    //     count = ~~(Math.sqrt(count) + 1); //计算要分成多少块瓦片
+    //     //计算每块瓦片的宽和高
+    //     var nw = ~~(width / count);
+    //     var nh = ~~(height / count);
+    //     tmpCvs.width = nw;
+    //     tmpCvs.height = nh;
+    //     for (var i = 0; i < count; i++) {
+    //         for (var j = 0; j < count; j++) {
+    //             tmpCtx.drawImage(imgObj, i * nw * ratio, j * nh * ratio, nw * ratio, nh * ratio, 0, 0, nw, nh);
+    //             cxt.drawImage(tmpCvs, i * nw, j * nh, nw, nh);
+    //         }
+    //     }
+    // } else {
+    //     cxt.drawImage(imgObj, 0, 0, width, height);
+    // }
+    cxt.drawImage(imgObj, 0, 0, width, height);
+    var data = cvs.toDataURL(mime_type, quality / 100);
+
+    if (tmpCvs) {
+        tmpCvs.width = tmpCvs.height = 0;
+    }
+    cvs.width = cvs.height = 0;
+}
 
 let cvs, tmpCvs;
 
