@@ -1,34 +1,18 @@
 /**
  * Created by rdshoep on 16/4/13.
  */
-import { extend, leftpad } from './utils';
+import * as utils from './utils';
 import ajax from '@fdaciuk/ajax';
 import Promise from 'promise';
 import OSS from 'ali-oss';
 
 //alioss default domain host
 const ALI_OSS_DOMAIN = "aliyuncs.com/";
-const TYPE_FILE = 'file';
-const TYPE_BUFFER = 'buffer';
-
-/**
- * create random the uploadFile name
- * @param opt  name config, support prefix & suffix
- */
-function randomFileName(opt) {
-    opt = opt || {};
-    let prefix = opt.prefix || 'pk';
-    let suffix = opt.suffix || '';
-
-    let curTime = new Date().getTime();
-    let key = leftpad(Math.round(Math.random() * 99999), 5, 0);
-    return prefix + curTime + "_" + key + suffix;
-}
 
 /**
  * auto generate image url
  * support oss style or specifix config
- * 
+ *
  * @param url the original url
  * @param opt config info
  */
@@ -50,32 +34,24 @@ function generateImageUrl(url, opt) {
     return url;
 }
 
-function resolveSafeFunctoin(possibleFunction) {
-    if (possibleFunction && possibleFunction instanceof Function) {
-        return possibleFunction;
-    } else {
-        return new Function;
-    }
-}
-
 class OssFileUpload {
     constructor(opts) {
         this.options = opts || {};
     }
 
     init(opts) {
-        let options = extend({}, this.options, opts);
+        let options = utils.extend({}, this.options, opts);
         let _this = this;
 
-        return new Promise(function(resolve, reject) {
+        return new Promise(function (resolve, reject) {
             if (options.auth && typeof options.auth == 'object') {
-                _this._initClient(extend({}, options, options.auth));
+                _this._initClient(utils.extend({}, options, options.auth));
                 _this._initial = true;
                 resolve();
             } else {
                 let authUrl = options.url;
                 if (authUrl && typeof authUrl == 'string') {
-                    _this.authorize(options.url, function(err, opt) {
+                    _this.authorize(options.url, function (err, opt) {
                         if (err) {
                             console.error(err);
                             reject(err);
@@ -94,11 +70,11 @@ class OssFileUpload {
     }
 
     authorize(url, callback) {
-        callback = resolveSafeFunctoin(callback);
+        callback = utils.resolveFunctoin(callback);
 
         ajax()
             .get(url)
-            .then(function(res, xhr) {
+            .then(function (res, xhr) {
                 if (res && typeof res == 'object') {
                     callback(undefined, {
                         region: res.region,
@@ -112,7 +88,7 @@ class OssFileUpload {
                     callback('request to sts server error: (' + xhr.status + ')' + xhr.responseText);
                 }
             })
-            .catch(function(res, xhr) {
+            .catch(function (res, xhr) {
                 callback('request to sts server error: (' + xhr.status + ')' + xhr.responseText);
             });
     }
@@ -136,9 +112,7 @@ class OssFileUpload {
 
     verify() {
         if (this._initial) {
-            return new Promise(function(resole) {
-                resole();
-            });
+            return Promise.resolve();
         } else {
             return this.init(this.options);
         }
@@ -152,9 +126,7 @@ class OssFileUpload {
         } else if (TYPE_BUFFER == type) {
             return this.client.put(name, new OSS.Buffer(data));
         } else {
-            return new Promise(function(resolve, reject) {
-                reject('unsupported upload data type:' + type);
-            });
+            return Promise.reject('unsupported upload data type:' + type)
         }
     }
 
@@ -166,47 +138,32 @@ class OssFileUpload {
      * @returns {*}
      */
     upload(file, name, opt) {
-        //调整参数
-        if (name && typeof name == 'object') {
-            opt = opt || name;
-            name = undefined;
-        }
-
         let option = opt || {};
 
-        //如果name为空,生成随机数key
-        if (name && typeof name == 'string') {
-            name = name.toString();
-        } else if (name && name instanceof Function) {
-            name = name();
-        } else {
-            name = randomFileName(opt);
-        }
-
         //before upload callback function
-        let before = resolveSafeFunctoin(option.before);
-        let success = resolveSafeFunctoin(option.success);
-        let error = resolveSafeFunctoin(option.error);
-        let progress = resolveSafeFunctoin(option.progress);
+        let before = utils.resolveFunctoin(option.before);
+        let success = utils.resolveFunctoin(option.success);
+        let error = utils.resolveFunctoin(option.error);
+        let progress = utils.resolveFunctoin(option.progress);
 
         var _this = this;
 
         let type = option.type || TYPE_FILE;
 
         if (!file) {
-            return new Promise(function(resolve, reject) {
+            return new Promise(function (resolve, reject) {
                 error(name, 'file content can not be empty!');
                 reject(err);
             });
         }
 
         return this.verify()
-            .then(function() {
+            .then(function () {
                 before(name);
                 console.log('begin upload');
                 return _this._uploadImpl(file, name, type, {
-                    progress: function(p) {
-                        return function(done) {
+                    progress: function (p) {
+                        return function (done) {
                             console.log('upload progress: %s', p);
                             progress(name, p);
                             done();
@@ -214,22 +171,20 @@ class OssFileUpload {
                     }
                 });
             })
-            .then(function(res) {
+            .then(function (res) {
                 console.log('upload success: %j', res);
                 res.url = generateImageUrl(_this.domain + res.name, option);
                 success(name, res);
                 return res;
             })
-            .catch(function(err) {
+            .catch(function (err) {
                 console.log('upload error: %j', err);
                 error(name, err);
-                return new Promise(function(resolve, reject) {
+                return new Promise(function (resolve, reject) {
                     reject(err);
                 });
             });
     }
 }
-
-// export default OssFileUpload;
 
 module.exports = OssFileUpload;

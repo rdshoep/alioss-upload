@@ -1,5 +1,5 @@
 ;
-(function(root, factory) {
+(function (root, factory) {
     'use strict'
 
     if (root) {
@@ -12,7 +12,7 @@
     } else if (typeof exports === 'object') {
         exports = module.exports = factory()
     }
-})(this || window, function() {
+})(this || window, function () {
     const ALIOSS_UPLOAD_ENGINE = 'alioss';
     //默认的upload上传引擎是阿里OSS服务
     const DEFAULT_UPLOAD_ENGINE = ALIOSS_UPLOAD_ENGINE;
@@ -20,6 +20,9 @@
     const SUPPORT_ENGINE_MAP = {
         alioss: require('./ossFileUpload')
     };
+
+    let imageCompress = require('./imageCompress');
+    let utils = require('./utils');
 
     function generateUploadImplClient(option) {
         option = option || {};
@@ -44,7 +47,7 @@
         let suffix = opt.suffix || '';
 
         let curTime = new Date().getTime();
-        let key = leftpad(Math.round(Math.random() * 99999), 5, 0);
+        let key = utils.leftpad(Math.round(Math.random() * 99999), 5, 0);
         return prefix + curTime + "_" + key + suffix;
     }
 
@@ -61,12 +64,12 @@
 
         /**
          * 上传图片
-         * @param file 图片
+         * @param data 图片
          * @param name 指定key
          * @param opt 配置信息（关于图片文件控制） {style: 'style', 'config': 'image_deal_config'}
          * @returns {*}
          */
-        upload(file, name, opt) {
+        upload(data, name, opt) {
             //调整参数
             if (name && typeof name == 'object') {
                 opt = opt || name;
@@ -84,16 +87,29 @@
                 name = randomFileName(opt);
             }
 
-            let type = option.type || TYPE_FILE;
+            let error = utils.resolveFunctoin(option.error);
 
-            if (!file) {
-                return new Promise(function(resolve, reject) {
+            if (!data) {
+                return new Promise(function (resolve, reject) {
                     error(name, 'file content can not be empty!');
-                    reject(err);
+                    reject('file content can not be empty!');
                 });
             }
 
-            return this.client.upload(file, name, option);
+            let _this = this;
+            if (data instanceof File && option.imageCompress) {
+                return imageCompress(data, option.imageCompress)
+                    .then(function (buffer) {
+                        option.type = 'buffer';
+                        return _this.client.upload(buffer, name, option);
+                    }).catch(function (err) {
+                        let msg = 'image compress error: ' + err;
+                        error(msg);
+                        throw new Error(msg);
+                    });
+            } else {
+                return this.client.upload(data, name, option);
+            }
         }
     }
 
