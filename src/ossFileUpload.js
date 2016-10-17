@@ -180,9 +180,7 @@ class OssFileUpload {
             .catch(function (err) {
                 console.log('upload error: %j', err);
                 error(name, err);
-                return new Promise(function (resolve, reject) {
-                    reject(err);
-                });
+                return Promise.reject(err);
             });
     }
 }
