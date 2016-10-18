@@ -98,9 +98,12 @@
 
             let _this = this;
             if (data instanceof File && option.imageCompress) {
-                return imageCompress(data, option.imageCompress)
+                return imageCompress(data, utils.extend({
+                    output: 'buffer'
+                }, option.imageCompress))
                     .then(function (buffer) {
                         option.type = 'buffer';
+                        console.log(buffer, data)
                         return _this.client.upload(buffer, name, option);
                     }).catch(function (err) {
                         let msg = 'image compress error: ' + err;

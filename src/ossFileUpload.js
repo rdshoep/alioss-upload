@@ -9,6 +9,9 @@ import OSS from 'ali-oss';
 //alioss default domain host
 const ALI_OSS_DOMAIN = "aliyuncs.com/";
 
+const TYPE_FILE = 'file';
+const TYPE_BUFFER = 'buffer';
+
 /**
  * auto generate image url
  * support oss style or specifix config
@@ -122,8 +125,10 @@ class OssFileUpload {
         type = type || TYPE_FILE;
 
         if (TYPE_FILE == type) {
+            console.log(name, data, option)
             return this.client.multipartUpload(name, data, option);
         } else if (TYPE_BUFFER == type) {
+            console.log(name, data, option, OSS.Buffer)
             return this.client.put(name, new OSS.Buffer(data));
         } else {
             return Promise.reject('unsupported upload data type:' + type)

@@ -29,31 +29,31 @@ function ImageObject(imgObj, option) {
     option = option || {};
 
     this.element = imgObj;
-    this.opt = {
+    this.option = {
         output: 'base64'
     };
 
-    opt.quality = option.quality || 100;
-    opt.outputImageType = 'image/jpeg';
+    this.option.quality = option.quality || 100;
+    this.option.outputImageType = 'image/jpeg';
     let outputImageType = option.outputImageType;
     if (typeof outputImageType !== "undefined"
         && (outputImageType == "png" || outputImageType == 'image/png')) {
-        opt.outputImageType = "image/png";
+        this.option.outputImageType = "image/png";
     }
-    opt.exif = option.exif === false ? false : true;
+    this.option.exif = option.exif === false ? false : true;
 
-    opt.maxWidth = Number(option.maxWidth) || 0;
-    opt.maxHeight = Number(option.maxHeight) || 0;
+    this.option.maxWidth = Number(option.maxWidth) || 0;
+    this.option.maxHeight = Number(option.maxHeight) || 0;
 
     let maxSize = option.maxSize;
     if (maxSize === false) {
-        opt.maxSize = 0;
+        this.option.maxSize = 0;
     } else if (Number(option.maxSize) > 0) {
-        opt.maxSize = Number(option.maxSize);
+        this.option.maxSize = Number(option.maxSize);
     }
 
     if ('buffer' == option.output) {
-        opt.output = option.output
+        this.option.output = option.output
     }
 }
 
@@ -64,6 +64,7 @@ function ImageObject(imgObj, option) {
  * @returns {*}
  */
 function convertFileToImage(imageObject, next) {
+    console.log('convertFileToImage--in', imageObject);
     let element = imageObject.element;
 
     if (element && element instanceof File) {
@@ -73,10 +74,13 @@ function convertFileToImage(imageObject, next) {
                 if (err) reject(err);
 
                 imageObject.element = imageElement;
+                imageObject.data = imageElement.src;
+                console.log('convertFileToImage--out', imageObject);
                 resolve();
             });
         }).then(next);
     } else {
+        console.log('convertFileToImage--out', imageObject);
         return next();
     }
 }
@@ -96,14 +100,15 @@ function backupImageExif(imageObject, next) {
         try {
             exifObj = piexif.load(data);
         } catch (err) {
-            return Promise.reject('load exif from image error');
+            console.error(err, data);
+            return Promise.reject('load exif from image error' + err);
         }
 
         return next().then(function () {
             let data = imageObject.data;
 
             try {
-                if (data) {
+                if (data && exifObj) {
                     data = piexif.insert(piexif.dump(exifObj), data);
                 }
             } catch (err) {
@@ -257,11 +262,15 @@ function calculateCompressRatio(width, height, maxPixels, maxWidth, maxHeight) {
  * @returns {*}
  */
 function convertImageToBuffer(imageObject, next) {
+    console.log('convertImageToBuffer', imageObject)
     let opt = imageObject.option;
 
     if ('buffer' == opt.output) {
-        let data = removeBase64FileTypeInfo(imageObject.data, opt.outputImageType)
-        imageObject.data = convertBase64ToBytes(data);
+        return next().then(function () {
+            let data = removeBase64FileTypeInfo(imageObject.data, opt.outputImageType)
+            imageObject.data = convertBytesToBuffer(convertBase64ToBytes(data));
+            return Promise.resolve();
+        })
     }
 
     return next();
@@ -341,7 +350,7 @@ function readFileAsDataUrl(file, cb) {
 }
 
 function generator() {
-    let mid = compose([convertFileToImage, backupImageExif, imageCompress, convertImageToBuffer]);
+    let mid = compose([convertFileToImage, convertImageToBuffer, backupImageExif, imageCompress]);
 
     /**
      * Receives an Image Object (can be JPG OR PNG) and returns a new Image Object compressed
@@ -359,7 +368,10 @@ function generator() {
             let imageContext = new ImageObject(imgObj, option);
 
             return mid(imageContext)
-                .then(Promise.resolve(imageContext.data));
+                .then(function () {
+                    console.log('compress-end', imageContext)
+                    return Promise.resolve(imageContext.data);
+                });
         }
         catch (err) {
             return Promise.reject(err);
