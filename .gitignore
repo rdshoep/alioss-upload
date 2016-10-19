@@ -43,4 +43,4 @@ jspm_packages
 .idea
 
 # build file folder
-dist
+dist/
