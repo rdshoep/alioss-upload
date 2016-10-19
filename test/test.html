@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <!--<script type="text/javascript" src="http://gosspublic.alicdn.com/aliyun-oss-sdk-4.3.0.min.js"></script>-->
+    <script type="text/javascript" src="http://gosspublic.alicdn.com/aliyun-oss-sdk-4.3.0.min.js"></script>
     <script src="../dist/upload.js"></script>
 </head>
 
@@ -14,7 +14,7 @@
 
     <input id="upload" type="file" />
 
-    <img id="img" style="width: 300px; height: 300px;" />
+    <img id="img" style="width: 100%;height: auto;" />
 </body>
 <script>
     var fileUpload = new FileUpload({
@@ -40,9 +40,8 @@
                 console.log('error', name, err);
             }
             , imageCompress: {
-                maxSize: 1024 * 10,
-                maxWidth: 50,
-                maxHeight: 100
+                maxWidth: 600,
+                maxHeight: 600
             }
         });
     });

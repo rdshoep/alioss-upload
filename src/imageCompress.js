@@ -98,10 +98,11 @@ function backupImageExif(imageObject, next) {
     if (option.exif) {
         let exifObj;
         try {
+            console.log(atob(data.split(",")[1]).slice(0,2))
             exifObj = piexif.load(data);
         } catch (err) {
-            console.error(err, data);
-            return Promise.reject('load exif from image error' + err);
+            console.error('load exif from image error', err, data)
+            //return Promise.reject('load exif from image error' + err);
         }
 
         return next().then(function () {
@@ -109,10 +110,12 @@ function backupImageExif(imageObject, next) {
 
             try {
                 if (data && exifObj) {
-                    data = piexif.insert(piexif.dump(exifObj), data);
+                    exifObj.thumbnail = null;
+                    imageObject.data = piexif.insert(piexif.dump(exifObj), data);
                 }
             } catch (err) {
-                return Promise.reject('insert exif to image error');
+                console.error('insert exif to image error', err, data, exifObj)
+                // return Promise.reject('insert exif to image error' + err);
             }
         });
     }
@@ -189,7 +192,6 @@ function imageCompress(imageObject, next) {
     //     tmpCvs.width = tmpCvs.height = 0;
     // }
     cvs.width = cvs.height = 0;
-
     return next();
 }
 
@@ -268,7 +270,7 @@ function convertImageToBuffer(imageObject, next) {
     if ('buffer' == opt.output) {
         return next().then(function () {
             let data = removeBase64FileTypeInfo(imageObject.data, opt.outputImageType)
-            imageObject.data = convertBytesToBuffer(convertBase64ToBytes(data));
+            imageObject.data = convertBytesToBuffer(convertBase64ToBytes(atob(data)));
             return Promise.resolve();
         })
     }
