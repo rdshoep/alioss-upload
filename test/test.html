@@ -25,7 +25,8 @@
     document.getElementById('upload').addEventListener('change', function(e) {
         var file = e.target.files[0];
         fileUpload.upload(file, {
-            style: 'wx',
+//            style: 'wx',
+            suffix: '.jpg',
             before: function(name) {
                 console.log('before', name);
             },
@@ -40,8 +41,7 @@
                 console.log('error', name, err);
             }
             , imageCompress: {
-                maxWidth: 600,
-                maxHeight: 600
+                maxWidth: 800
             }
         });
     });

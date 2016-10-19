@@ -63,8 +63,7 @@ function ImageObject(imgObj, option) {
  * @param next next middleware
  * @returns {*}
  */
-function convertFileToImage(imageObject, next) {
-    console.log('convertFileToImage--in', imageObject);
+function autoLoadImageFile(imageObject, next) {
     let element = imageObject.element;
 
     if (element && element instanceof File) {
@@ -75,13 +74,50 @@ function convertFileToImage(imageObject, next) {
 
                 imageObject.element = imageElement;
                 imageObject.data = imageElement.src;
-                console.log('convertFileToImage--out', imageObject);
                 resolve();
             });
         }).then(next);
     } else {
-        console.log('convertFileToImage--out', imageObject);
         return next();
+    }
+}
+
+/**
+ * 自动检查是否需要进行压缩操作,并进行相关的计算，将计算结果放置到imageObject.compress中
+ * @param imageObject
+ * @param next
+ * @returns {*}
+ */
+function smartCompress(imageObject, next) {
+    let option = imageObject.option;
+
+    let maxSize = option.maxSize
+        , maxHeight = option.maxHeight
+        , maxWidth = option.maxWidth
+        , outputImageType = option.outputImageType;
+
+    let maxPixels = calculateImageCompressPixels(maxSize, maxWidth, maxHeight
+        , DEFAULT_COMPRESS_PIXELS_SIZE, outputImageType);
+
+    let imgObj = imageObject.element
+        , width = imgObj.naturalWidth
+        , height = imgObj.naturalHeight;
+
+    //计算得到最符合需求的压缩比例
+    let ratio = calculateCompressRatio(width, height, maxPixels, maxWidth, maxHeight);
+    if (ratio > 1) {
+        width /= ratio;
+        height /= ratio;
+
+        imageObject.compress = {
+            width: width,
+            height: height,
+            imageType: option.outputImageType
+        }
+
+        return next();
+    } else {// 不需要压缩，
+        return;
     }
 }
 
@@ -98,7 +134,6 @@ function backupImageExif(imageObject, next) {
     if (option.exif) {
         let exifObj;
         try {
-            console.log(atob(data.split(",")[1]).slice(0,2))
             exifObj = piexif.load(data);
         } catch (err) {
             console.error('load exif from image error', err, data)
@@ -131,24 +166,12 @@ function backupImageExif(imageObject, next) {
  */
 function imageCompress(imageObject, next) {
     let option = imageObject.option;
-
-    let maxSize = option.maxSize
-        , maxHeight = option.maxHeight
-        , maxWidth = option.maxWidth
-        , outputImageType = option.outputImageType;
-
-    let maxPixels = calculateImageCompressPixels(maxSize, maxWidth, maxHeight
-        , DEFAULT_COMPRESS_PIXELS_SIZE, outputImageType);
+    let compress = imageObject.compress;
 
     let imgObj = imageObject.element
-        , width = imgObj.naturalWidth
-        , height = imgObj.naturalHeight;
-
-    let ratio = calculateCompressRatio(width, height, maxPixels, maxWidth, maxHeight);
-    if (ratio > 1) {
-        width /= ratio;
-        height /= ratio;
-    }
+        , width = compress.width
+        , height = compress.height
+        , imageType = compress.imageType;
 
     let cvs = document.createElement('canvas')
         , cxt = cvs.getContext("2d");
@@ -157,7 +180,7 @@ function imageCompress(imageObject, next) {
     cvs.height = height;
 
     //如果是jpg，则添加铺底色
-    if (outputImageType == 'image/jpeg') {
+    if (imageType == 'image/jpeg') {
         cvs.fillStyle = option.backgroundColor || '#fff';
     }
 
@@ -186,7 +209,7 @@ function imageCompress(imageObject, next) {
     //     cxt.drawImage(imgObj, 0, 0, width, height);
     // }
     cxt.drawImage(imgObj, 0, 0, width, height);
-    imageObject.data = cvs.toDataURL(outputImageType, quality / 100);
+    imageObject.data = cvs.toDataURL(imageType, quality / 100);
 
     // if (tmpCvs) {
     //     tmpCvs.width = tmpCvs.height = 0;
@@ -264,7 +287,6 @@ function calculateCompressRatio(width, height, maxPixels, maxWidth, maxHeight) {
  * @returns {*}
  */
 function convertImageToBuffer(imageObject, next) {
-    console.log('convertImageToBuffer', imageObject)
     let opt = imageObject.option;
 
     if ('buffer' == opt.output) {
@@ -352,7 +374,7 @@ function readFileAsDataUrl(file, cb) {
 }
 
 function generator() {
-    let mid = compose([convertFileToImage, convertImageToBuffer, backupImageExif, imageCompress]);
+    let mid = compose([autoLoadImageFile, smartCompress, convertImageToBuffer, backupImageExif, imageCompress]);
 
     /**
      * Receives an Image Object (can be JPG OR PNG) and returns a new Image Object compressed
@@ -371,7 +393,6 @@ function generator() {
 
             return mid(imageContext)
                 .then(function () {
-                    console.log('compress-end', imageContext)
                     return Promise.resolve(imageContext.data);
                 });
         }
