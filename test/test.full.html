@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title></title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <script type="text/javascript" src="http://gosspublic.alicdn.com/aliyun-oss-sdk-4.4.4.min.js"></script>
+    <script src="../dist/0.1.0/upload.full.js"></script>
+</head>
+
+<body>
+
+    <input id="upload" type="file" />
+
+    <img id="img" style="width: 100%;height: auto;" />
+</body>
+<script>
+    var fileUpload = new FileUpload({
+        auth: 'http://test.oss.smartmiting.com/token'
+    });
+
+    document.getElementById('upload').addEventListener('change', function(e) {
+        var file = e.target.files[0];
+        console.log(file.name)
+        fileUpload.upload(file, {
+//            style: 'wx',
+//            suffix: '.jpg',
+            before: function(name) {
+                console.log('before', name);
+            },
+            progress: function(name, p) {
+                console.log('progress', name, p);
+            },
+            success: function(name, res) {
+                console.log('success', name, res);
+                document.getElementById('img').src = res.url;
+            },
+            error: function(name, err) {
+                console.log('error', name, err);
+            }
+            , imageCompress: {
+                maxWidth: 400
+            }
+        });
+    });
+</script>
+
+</html>

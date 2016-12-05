@@ -6,8 +6,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <script type="text/javascript" src="http://gosspublic.alicdn.com/aliyun-oss-sdk-4.3.0.min.js"></script>
-    <script src="../dist/upload.js"></script>
+    <script type="text/javascript" src="http://gosspublic.alicdn.com/aliyun-oss-sdk-4.4.4.min.js"></script>
+    <script src="../dist/0.1.0/upload.js"></script>
 </head>
 
 <body>
@@ -18,15 +18,15 @@
 </body>
 <script>
     var fileUpload = new FileUpload({
-        url: 'http://test.oss.smartmiting.com/token',
-        type: 1
+        auth: 'http://test.oss.smartmiting.com/token'
     });
 
     document.getElementById('upload').addEventListener('change', function(e) {
         var file = e.target.files[0];
+        console.log(file.name)
         fileUpload.upload(file, {
 //            style: 'wx',
-            suffix: '.jpg',
+//            suffix: '.jpg',
             before: function(name) {
                 console.log('before', name);
             },

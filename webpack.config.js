@@ -1,14 +1,16 @@
 var path = require('path');
 var webpack = require('webpack');
+var package = require('./package.json');
 
 module.exports = {
     entry: {
-        'upload': ['babel-polyfill', path.resolve(__dirname, 'src/fileUpload.js')]
+        'upload': path.resolve(__dirname, 'package/upload.js'),
+        'upload.full': ['babel-polyfill', path.resolve(__dirname, 'package/upload.full.js')]
     },
     output: {
         path: path.resolve(__dirname, 'dist'),
         publicPath: "/dist/",
-        filename: '[name].js'
+        filename: package.version + '/[name].js'
     },
     node: {
         fs: "empty",
@@ -19,9 +21,9 @@ module.exports = {
     devtool: "#source-map",
     module: {
         loaders: [{
-                test: /\.(js)$/,
-                loader: 'babel-loader?presets[]=es2015'
-            },
+            test: /\.(js)$/,
+            loader: 'babel-loader?presets[]=es2015'
+        },
             {
                 test: /\.(json)$/,
                 loader: 'json-loader'
@@ -33,5 +35,14 @@ module.exports = {
         alias: {
             'crypto': 'shims/crypto.js'
         }
-    }
+    },
+    plugins: [
+        // new  webpack.optimize.CommonsChunkPlugin('common.js', ['upload', 'upload.full']),
+        new webpack.optimize.UglifyJsPlugin({
+            compress: {
+                warnings: false
+            },
+            comments: false
+        })
+    ]
 };

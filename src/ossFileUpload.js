@@ -47,14 +47,13 @@ class OssFileUpload {
         let _this = this;
 
         return new Promise(function (resolve, reject) {
-            if (options.auth && typeof options.auth == 'object') {
-                _this._initClient(utils.extend({}, options, options.auth));
-                _this._initial = true;
-                resolve();
-            } else {
-                let authUrl = options.url;
-                if (authUrl && typeof authUrl == 'string') {
-                    _this.authorize(options.url, function (err, opt) {
+            if (options.auth) {
+                if (typeof options.auth == 'object') {
+                    _this._initClient(utils.extend({}, options, options.auth));
+                    _this._initial = true;
+                    resolve();
+                } else if (typeof options.auth == 'string') {
+                    _this.authorize(options.auth, function (err, opt) {
                         if (err) {
                             console.error(err);
                             reject(err);
@@ -66,8 +65,10 @@ class OssFileUpload {
                         resolve();
                     });
                 } else {
-                    reject('invalid auth server url: ' + authUrl);
+                    reject('invalid option.auth config type: ' + typeof options.auth);
                 }
+            } else {
+                reject("option.auth config can't be null!");
             }
         });
     }
