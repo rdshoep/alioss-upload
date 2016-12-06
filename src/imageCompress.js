@@ -320,13 +320,16 @@ function convertDataToBuffer(data) {
  * @returns {void|XML|string|*}
  */
 function removeBase64FileTypeInfo(base64String, sourceType) {
-    var type = "image/jpeg";
+    // var type = "image/jpeg";
+    //
+    // if (sourceType && typeof sourceType == 'string' && sourceType.endsWith('png')) {
+    //     type = 'image/png';
+    // }
 
-    if (sourceType && typeof sourceType == 'string' && sourceType.endsWith('png')) {
-        type = 'image/png';
-    }
+    // return base64String.replace('data:' + type + ';base64,', '');
 
-    return base64String.replace('data:' + type + ';base64,', '');
+    //如果没有激活压缩条件，源文件的类型无法感知（无法通过文件名自动判断），所以目前通过正则强制移除开头的标识
+    return base64String.replace(/^data:[\w\\/]+;base64,/, '');
 }
 
 /**
