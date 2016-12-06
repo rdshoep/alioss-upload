@@ -48,7 +48,10 @@ or
     
 
 ### Update List
-0.1.0
+#### 0.1.1(2016/12/06)
+repair bug: image compress return base64 instead of buffer when compression is not actived
+
+#### 0.1.0
 1. auto set fileName prefix by upload time, such as '/2016/12/03/123455231231_13221';
 2. auto set fileName suffix by file.name;
 3. create two version script file: upload.js, upload.full.js
