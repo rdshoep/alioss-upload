@@ -114,11 +114,12 @@ function smartCompress(imageObject, next) {
             height: height,
             imageType: option.outputImageType
         }
-
-        return next();
-    } else {// 不需要压缩，
-        return;
     }
+
+    //修复在不需要压缩情况下，返回base64格式数据的BUG
+    //为了保证输出需求output的一致性，将此处调整为继续向下执行，经过数据转换处理逻辑
+    //TODO 需要考虑，如何在避免不需要压缩情况下的读取和转换数据的开销
+    return next();
 }
 
 /**
@@ -131,7 +132,7 @@ function backupImageExif(imageObject, next) {
     let data = imageObject.data;
     let option = imageObject.option;
 
-    if (option.exif) {
+    if (option.exif && imageObject.compress) {
         let exifObj;
         try {
             exifObj = piexif.load(data);
@@ -167,6 +168,9 @@ function backupImageExif(imageObject, next) {
 function imageCompress(imageObject, next) {
     let option = imageObject.option;
     let compress = imageObject.compress;
+
+    //如果没有压缩配置，则返回相应的配置数据
+    if (!compress) return;
 
     let imgObj = imageObject.element
         , width = compress.width
