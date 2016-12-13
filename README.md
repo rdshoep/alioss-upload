@@ -11,7 +11,7 @@ upload plugin for alioss
 
 ### Config
 * `option` new FileUpload(option)
-```json
+```js
     auth {
         region: 'oss region',
         accessKeyId: 'AccessKeyId',
