@@ -30,7 +30,7 @@ FileUpload.prototype._upload = function(data, name, option){
                 throw new Error(msg);
             });
     } else {
-        return _this.client.upload(buffer, name, option);
+        return _this.client.upload(data, name, option);
     }
 };
 
