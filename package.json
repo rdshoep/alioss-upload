@@ -4,7 +4,8 @@
   "description": "alioss-fileupload",
   "main": "fileUpload.js",
   "scripts": {
-    "build": "webpack --progress --colors --minify",
+    "product": "webpack --progress --colors --minify",
+    "build": "webpack --progress --colors",
     "test": "node ./test/server.js"
   },
   "repository": "https://github.com/rdshoep/alioss-upload",
@@ -15,10 +16,12 @@
   "author": "Rdshoep",
   "license": "MIT",
   "devDependencies": {
-    "babel-core": "^6.14.0",
-    "babel-loader": "^6.2.5",
-    "babel-polyfill": "^6.13.0",
-    "babel-preset-es2015": "^6.14.0",
+    "babel-core": "^6.21.0",
+    "babel-loader": "^6.2.10",
+    "babel-polyfill": "^6.20.0",
+    "babel-preset-es2015": "^6.18.0",
+    "babel-preset-stage-0": "^6.14.0",
+    "babel-runtime": "^6.3.13",
     "crypto-browserify": "^3.11.0",
     "json-loader": "^0.5.4",
     "node-static": "^0.7.8",

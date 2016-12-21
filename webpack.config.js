@@ -22,7 +22,10 @@ module.exports = {
     module: {
         loaders: [{
             test: /\.(js)$/,
-            loader: 'babel-loader?presets[]=es2015'
+            loader: ["babel-loader"]
+            , query: {
+                presets: ['es2015', 'stage-0']
+            }
         },
             {
                 test: /\.(json)$/,
@@ -30,12 +33,12 @@ module.exports = {
             }
         ]
     },
-    resolve: {
-        root: path.resolve(__dirname, ''),
-        alias: {
-            'crypto': 'shims/crypto.js'
-        }
-    },
+    // resolve: {
+    //     root: path.resolve(__dirname, ''),
+    //     alias: {
+    //         'crypto': 'shims/crypto.js'
+    //     }
+    // },
     plugins: [
         // new  webpack.optimize.CommonsChunkPlugin('common.js', ['upload', 'upload.full']),
         new webpack.optimize.UglifyJsPlugin({
