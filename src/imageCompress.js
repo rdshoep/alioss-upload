@@ -14,7 +14,7 @@ import compose from './compose'
 //单位瓦片大小
 //用于将图片划分为多个万片，避免占用内存过多
 const MAX_IMAGE_TILE_SIZE = 1000000;
-const DEFAULT_COMPRESS_PIXELS_SIZE = 200000; //400 * 500
+const DEFAULT_COMPRESS_PIXELS_SIZE = 300000; //500 * 600
 
 function ImageObject(imgObj, option) {
     if (typeof imgObj == 'string') {
@@ -40,16 +40,17 @@ function ImageObject(imgObj, option) {
         && (outputImageType == "png" || outputImageType == 'image/png')) {
         this.option.outputImageType = "image/png";
     }
-    this.option.exif = option.exif === false ? false : true;
+    this.option.exif = option.exif !== false;
 
     this.option.maxWidth = Number(option.maxWidth) || 0;
     this.option.maxHeight = Number(option.maxHeight) || 0;
 
-    let maxSize = option.maxSize;
-    if (maxSize === false) {
-        this.option.maxSize = 0;
-    } else if (Number(option.maxSize) > 0) {
-        this.option.maxSize = Number(option.maxSize);
+    //如果maxSize为false，表示不需要限制最大像素
+    this.option.maxSize = option.maxSize;
+    //如果没有设置maxSize、maxWidth、maxHeight，则将maxSize设置为有效，使用默认的像素值
+    if (this.option.maxSize === undefined
+        && !(this.option.maxWidth > 0 || this.option.maxHeight > 0)) {
+        this.option.maxSize = true;
     }
 
     if ('buffer' == option.output) {
@@ -238,13 +239,13 @@ function calculateImageCompressPixels(maxSize, maxWidth, maxHeight, defaultMaxPi
         unitPixelSize = 4;
     }
 
-    let maxPixels = defaultMaxPixels || DEFAULT_COMPRESS_PIXELS_SIZE
+    let maxPixels = defaultMaxPixels || DEFAULT_COMPRESS_PIXELS_SIZE;
 
     //如果maxSize为false，标识不需要限制大小
     if (maxSize === false) {
         maxPixels = 0;
-    } else if (maxSize > 0) {//如果maxSize为数字，并且大于0，则根据大小计算相对应的像素值
-        maxPixels = Math.floor(maxSize / unitPixelSize);
+    } else if (parseInt(maxSize) > 0) {//如果maxSize为数字，并且大于0，则根据大小计算相对应的像素值
+        maxPixels = Math.floor(parseInt(maxSize) / unitPixelSize);
     }
 
     //如果最大宽度和高度不为0，则需要再根据最大宽和高计算相对应的像素值

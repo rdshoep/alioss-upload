@@ -43,13 +43,16 @@ or
       3. `exif` boolean, save exif info after compress
       4. `maxWidth` Number image max width
       5. `maxHeight` Number image max height
-      6. `maxSize` Number image max size
+      6. `maxSize` Number image max size  (false or number > 0)
+                   if maxWidth,maxHeight,maxSize are undefined,use default maxPixels(500*600=300000)
       7. `backgroundColor` String background color, default '#fff', it works that png convert to jpeg
     
 
 ### Update List
 #### 0.1.1(2016/12/06)
 repair bug: image compress return base64 instead of buffer when compression is not actived
+repair bug: maxSize=false can't off maxSize setting
+increase DEFAULT_COMPRESS_PIXELS_SIZE to 300000(500*600)
 
 #### 0.1.0
 1. auto set fileName prefix by upload time, such as '/2016/12/03/123455231231_13221';
