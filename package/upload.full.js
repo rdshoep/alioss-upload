@@ -22,11 +22,10 @@ FileUpload.prototype._upload = function(data, name, option){
         }, option.imageCompress))
             .then(function (buffer) {
                 option.type = 'buffer';
-                console.log(buffer, data)
                 return _this.client.upload(buffer, name, option);
             }).catch(function (err) {
+                error(name, err);
                 let msg = 'image compress error: ' + err;
-                error(msg);
                 throw new Error(msg);
             });
     } else {

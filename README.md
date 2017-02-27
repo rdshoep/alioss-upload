@@ -49,6 +49,9 @@ or
     
 
 ### Update List
+#### 0.1.2
+force set compress maxSize to 5MB, compress in mobile env will out of memory
+
 #### 0.1.1(2016/12/06)
 repair bug: image compress return base64 instead of buffer when compression is not actived
 repair bug: maxSize=false can't off maxSize setting

@@ -68,6 +68,13 @@ function autoLoadImageFile(imageObject, next) {
     let element = imageObject.element;
 
     if (element && element instanceof File) {
+        //暂时关闭大文件压缩和上传
+        let fileSize = element.size;
+        console.log('fileSize', fileSize);
+        if(fileSize > 5 * 1024 * 1024){
+            return Promise.reject('文件超过大小限制(5M)，当前大小为' + Math.round(fileSize / 1024 / 1024) + 'M');
+        }
+
         imageObject.file = element;
         return new Promise(function (resolve, reject) {
             readFileAsDataUrl(element, function (err, imageElement) {
@@ -399,10 +406,7 @@ function generator() {
         try {
             let imageContext = new ImageObject(imgObj, option);
 
-            return mid(imageContext)
-                .then(function () {
-                    return Promise.resolve(imageContext.data);
-                });
+            return mid(imageContext);
         }
         catch (err) {
             return Promise.reject(err);

@@ -1,6 +1,6 @@
 {
   "name": "alioss-upload",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "alioss-fileupload",
   "main": "fileUpload.js",
   "scripts": {
