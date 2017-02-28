@@ -1,5 +1,6 @@
 # alioss-upload
 upload plugin for alioss
+
 [aliyun oss docs](https://help.aliyun.com/document_detail/32069.html)
 
 ## Usage
@@ -70,8 +71,10 @@ or
   1. `data` File or Buffer, default File, if data is Buffer type, you need set option.type='buffer'
   2. `name` String | Function, value as you set, default 'year/month/date/hour/timeInterval_random.fileType'.
   3. `option` json object
-    * `prefix` file name prefix str
+    * `prefix` file name prefix str, you can set folder
     * `suffix` file name suffix str
+    * `style`  oss image deal style, don't need `@!` [docs](https://help.aliyun.com/document_detail/32207.html)
+    * `config` oss image deal config, don't need `@` [docs](https://help.aliyun.com/document_detail/32207.html)
     * `before` function, invoke before upload 
     * `progress` function, get upload progress
     * `success` function, invoke after upload file success
@@ -89,6 +92,7 @@ or
 
 ### difference between `upload.js` and `upload.full.js`
  `upload.js` only support upload
+
  `upload.full.js` support compress, and retain image exif info is a option
 
 ### Update List
