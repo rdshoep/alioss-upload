@@ -409,7 +409,7 @@ function generator() {
             return mid(imageContext)
                 .then(function () {
                     return Promise.resolve(imageContext.data);
-                });;
+                });
         }
         catch (err) {
             return Promise.reject(err);
