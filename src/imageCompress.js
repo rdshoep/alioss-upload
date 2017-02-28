@@ -406,7 +406,10 @@ function generator() {
         try {
             let imageContext = new ImageObject(imgObj, option);
 
-            return mid(imageContext);
+            return mid(imageContext)
+                .then(function () {
+                    return Promise.resolve(imageContext.data);
+                });;
         }
         catch (err) {
             return Promise.reject(err);
