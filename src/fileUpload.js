@@ -1,11 +1,13 @@
 'use strict';
 
 const ALIOSS_UPLOAD_ENGINE = 'alioss';
+const PLUPLOAD_UPLOAD_ENGINE = 'plupload';
 //默认的upload上传引擎是阿里OSS服务
 const DEFAULT_UPLOAD_ENGINE = ALIOSS_UPLOAD_ENGINE;
 //支持的上传引擎
 const SUPPORT_ENGINE_MAP = {
-    alioss: require('./ossFileUpload')
+    alioss: require('./ossFileUpload'),
+    plupload: require('./pluploadFileUpload')
 };
 
 let utils = require('./utils');

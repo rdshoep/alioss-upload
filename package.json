@@ -1,6 +1,6 @@
 {
   "name": "alioss-upload",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "alioss-fileupload",
   "main": "fileUpload.js",
   "scripts": {
@@ -23,8 +23,10 @@
     "babel-preset-stage-0": "^6.14.0",
     "babel-runtime": "^6.3.13",
     "crypto-browserify": "^3.11.0",
+    "eventemitter3": "^2.0.3",
     "json-loader": "^0.5.4",
     "node-static": "^0.7.8",
+    "plupload": "^2.3.2",
     "webpack": "^1.13.2"
   },
   "dependencies": {

@@ -6,8 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <script type="text/javascript" src="http://gosspublic.alicdn.com/aliyun-oss-sdk-4.4.4.min.js"></script>
-    <script src="../dist/0.1.2/upload.js"></script>
+    <script src="../dist/0.2.0/upload.js"></script>
     <script src="http://wechatfe.github.io/vconsole/lib/vconsole.min.js?v=2.5.2"></script>
 </head>
 
@@ -19,7 +18,8 @@
 </body>
 <script>
     var fileUpload = new FileUpload({
-        auth: 'http://test.oss.smartmiting.com/token'
+        auth: 'http://test.oss.smartmiting.com/token',
+        engine: 'plupload'
     });
 
     document.getElementById('upload').addEventListener('change', function(e) {
@@ -41,9 +41,9 @@
             error: function(name, err) {
                 console.log('error', name, err);
             }
-            , imageCompress: {
-                maxWidth: 800
-            }
+//            , imageCompress: {
+//                maxWidth: 200
+//            }
         });
     });
 </script>
