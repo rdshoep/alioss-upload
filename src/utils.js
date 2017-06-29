@@ -65,14 +65,17 @@ function resolveFunctoin(possibleFunction) {
     if (possibleFunction && possibleFunction instanceof Function) {
         return possibleFunction;
     } else {
-        return new Function;
+        return noop;
     }
 }
+
+function noop(){}
 
 export {
     extend,
     leftpad,
     concatResolve,
     concatReject,
-    resolveFunctoin
+    resolveFunctoin,
+    noop
 }

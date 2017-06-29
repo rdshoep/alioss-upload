@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <script src="../dist/0.2.0/upload.js"></script>
+    <script src="//127.0.0.1:3001/dist/1.0.0-alpha/upload.plupload.js"></script>
     <script src="http://wechatfe.github.io/vconsole/lib/vconsole.min.js?v=2.5.2"></script>
 </head>
 
@@ -18,13 +18,12 @@
 </body>
 <script>
     var fileUpload = new FileUpload({
-        auth: 'http://test.oss.smartmiting.com/token',
-        engine: 'plupload'
+        token: 'http://test.oss.smartmiting.com/token',
     });
 
     document.getElementById('upload').addEventListener('change', function(e) {
         var file = e.target.files[0];
-        console.log(file.name)
+        console.log('file changed', file.name)
         fileUpload.upload(file, {
 //            style: 'wx',
 //            suffix: '.jpg',
