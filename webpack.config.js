@@ -42,6 +42,10 @@ module.exports = {
         warnings: false
       },
       comments: false
+    }),
+    new webpack.DefinePlugin({
+      //set default plupload resource folder
+      PLUPLOAD_RESOURCE_PATH: JSON.stringify("/plupload/")
     })
   ]
 };

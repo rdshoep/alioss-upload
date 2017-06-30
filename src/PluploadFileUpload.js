@@ -67,7 +67,7 @@ class PluploadFileUpload {
       options.fileInput = id;
     }
 
-    let resourceFolder = '/plupload/';
+    let resourceFolder = PLUPLOAD_RESOURCE_PATH;
     if(options.resource){
       resourceFolder = options.resource;
     }

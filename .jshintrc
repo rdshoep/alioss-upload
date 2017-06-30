@@ -7,6 +7,7 @@
   "sub": true,
   "globals": {
     "module": true,
-    "File": true
+    "File": true,
+    "PLUPLOAD_RESOURCE_PATH": true
   }
 }
