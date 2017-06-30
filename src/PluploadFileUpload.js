@@ -78,7 +78,7 @@ class PluploadFileUpload {
       //multi_selection: false,
       //crossdomain.xml
       flash_swf_url: resourceFolder + 'Moxie.swf',
-      silverlight_xap_url: resourceFolder + 'Moxie.swf',
+      silverlight_xap_url: resourceFolder + 'Moxie.xap',
       max_retries: 3,
       // chunk_size: '200kb',
       url: 'http://oss.aliyuncs.com',
