@@ -4,8 +4,7 @@
   "description": "file uploader for web by alioss engine",
   "main": "fileUpload.js",
   "scripts": {
-    "product": "webpack --progress --colors --minify",
-    "build": "webpack --progress --colors",
+    "build": "gulp",
     "test": "node ./test/server.js"
   },
   "repository": "https://github.com/rdshoep/alioss-upload",
@@ -30,7 +29,10 @@
     "babel-preset-stage-0": "^6.24.1",
     "babel-runtime": "^6.23.0",
     "crypto-browserify": "^3.11.0",
+    "gulp": "^3.9.1",
     "node-static": "^0.7.9",
+    "rimraf": "^2.6.1",
+    "run-sequence": "^1.2.2",
     "webpack": "^3.0.0",
     "webpack-dev-server": "^2.5.0"
   },

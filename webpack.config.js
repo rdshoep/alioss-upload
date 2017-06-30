@@ -11,7 +11,7 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, 'dist'),
     publicPath: "/dist/",
-    filename: package.version + '/[name].js'
+    filename: '[name].js'
   },
   node: {
     fs: "empty",
