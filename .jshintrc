@@ -1,4 +1,12 @@
 {
-    "esversion": 6,
-    "asi": true
+  "esversion": 6,
+  "node": true,
+  "-W014": false,// Bad line breaking before ? (in tertiary operator)
+  "laxcomma": true,
+  "asi": true,
+  "sub": true,
+  "globals": {
+    "module": true,
+    "File": true
+  }
 }

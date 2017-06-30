@@ -41,6 +41,3 @@ jspm_packages
 
 # WebStorm config files
 .idea
-
-# build file folder
-dist/

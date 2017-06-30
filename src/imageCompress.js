@@ -417,4 +417,4 @@ function generator() {
     }
 }
 
-module.exports = module.exports['default'] = generator();
+export default generator();

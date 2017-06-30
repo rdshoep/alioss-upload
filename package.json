@@ -1,36 +1,46 @@
 {
-  "name": "alioss-upload",
-  "version": "0.1.2",
-  "description": "alioss-fileupload",
+  "name": "uploader",
+  "version": "1.0.0-alpha",
+  "description": "file uploader for web by alioss engine",
   "main": "fileUpload.js",
   "scripts": {
-    "product": "webpack --progress --colors --minify",
-    "build": "webpack --progress --colors",
+    "build": "gulp",
     "test": "node ./test/server.js"
   },
   "repository": "https://github.com/rdshoep/alioss-upload",
   "keywords": [
     "alioss",
-    "fileupload"
+    "file uploader"
   ],
+  "babel": {
+    "presets": [
+      "es2015",
+      "stage-0"
+    ]
+  },
   "author": "Rdshoep",
   "license": "MIT",
   "devDependencies": {
-    "babel-core": "^6.21.0",
-    "babel-loader": "^6.2.10",
-    "babel-polyfill": "^6.20.0",
-    "babel-preset-es2015": "^6.18.0",
-    "babel-preset-stage-0": "^6.14.0",
-    "babel-runtime": "^6.3.13",
+    "ali-oss": "^4.8.0",
+    "babel-core": "^6.25.0",
+    "babel-loader": "^7.1.1",
+    "babel-polyfill": "^6.23.0",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-stage-0": "^6.24.1",
+    "babel-runtime": "^6.23.0",
     "crypto-browserify": "^3.11.0",
-    "json-loader": "^0.5.4",
-    "node-static": "^0.7.8",
-    "webpack": "^1.13.2"
+    "gulp": "^3.9.1",
+    "node-static": "^0.7.9",
+    "rimraf": "^2.6.1",
+    "run-sequence": "^1.2.2",
+    "webpack": "^3.0.0",
+    "webpack-dev-server": "^2.5.0"
   },
   "dependencies": {
-    "@fdaciuk/ajax": "^2.1.2",
-    "ali-oss": "^4.4.4",
-    "piexifjs": "^1.0.0",
-    "promise": "^7.1.1"
+    "@fdaciuk/ajax": "^2.1.6",
+    "plupload": "^2.3.2",
+    "piexifjs": "^1.0.3",
+    "eventemitter3": "^2.0.3",
+    "promise": "^8.0.0"
   }
 }
